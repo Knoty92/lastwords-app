@@ -51,7 +51,7 @@
     color: var(--muted);
     margin: 22px 0 8px;
   }
-  input, textarea {
+  input, textarea, select {
     width: 100%;
     background: var(--field);
     border: none;
@@ -62,12 +62,41 @@
     color: var(--ink);
     border-radius: 2px;
   }
-  input:focus, textarea:focus { outline: none; border-bottom-color: var(--gold); }
+  input:focus, textarea:focus, select:focus { outline: none; border-bottom-color: var(--gold); }
   textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
   .hint { font-size: 0.82rem; color: var(--muted); margin-top: 6px; font-style: italic; }
   .row { display: flex; gap: 14px; }
   .row > div { flex: 1; }
   @media (max-width: 520px) { .row { flex-direction: column; gap: 0; } }
+
+  .photo-box {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .photo-box input[type="file"] { display: none; }
+  .photo-btn {
+    background: var(--field);
+    border: 1px solid #c9c2b0;
+    color: var(--ink);
+    padding: 10px 16px;
+    border-radius: 2px;
+    font-family: Georgia, serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    white-space: nowrap;
+  }
+  .photo-btn:hover { background: #e5dfcf; }
+  .photo-preview {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gold);
+    display: none;
+  }
+  .photo-preview.show { display: block; }
 
   .btn {
     display: block;
@@ -98,19 +127,32 @@
     border-radius: 2px;
     box-shadow: 0 24px 70px rgba(0,0,0,0.5);
     position: relative;
+    text-align: center;
   }
   .paper::before, .paper::after {
     content: ""; position: absolute; left: 14px; right: 14px;
     border: 1px solid rgba(185,154,94,0.4); pointer-events: none;
   }
   .paper::before { top: 8px; } .paper::after { bottom: 8px; }
-  .paper .cross { text-align: center; font-size: 1.6rem; margin-bottom: 20px; color: var(--gold); }
+  .paper .cross { text-align: center; font-size: 1.5rem; margin-bottom: 14px; color: var(--gold); }
+  .photo-final {
+    width: 180px; height: 180px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #ddd;
+    filter: sepia(0.15) contrast(1.02);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    margin: 0 auto 24px;
+    display: none;
+  }
+  .photo-final.show { display: block; }
   #speech {
     white-space: pre-wrap;
     font-family: Georgia, serif;
     font-size: 1.06rem;
     line-height: 1.8;
     outline: none;
+    text-align: left;
   }
   #speech:focus { box-shadow: 0 0 0 2px rgba(185,154,94,0.3); }
   .paper .sig { margin-top: 32px; text-align: right; font-style: italic; color: #666; }
@@ -126,6 +168,7 @@
     .top, .card, .actions, footer { display: none !important; }
     .result-wrap { display: block !important; margin: 0; padding: 0; }
     .paper { box-shadow: none; border: none; padding: 20px; }
+    .photo-final { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
 </head>
@@ -145,20 +188,41 @@
         <input id="name" placeholder="např. Marie Nováková" autocomplete="off">
       </div>
       <div>
-        <label for="years">Roky života (nepovinné)</label>
-        <input id="years" placeholder="např. 1948 – 2026" autocomplete="off">
+        <label for="gender">Pohlaví</label>
+        <select id="gender">
+          <option value="m">muž</option>
+          <option value="f">žena</option>
+        </select>
       </div>
     </div>
 
-    <label for="relation">Váš vztah k zesnulému</label>
-    <input id="relation" placeholder="např. vnučka, přítel, kolega, dcera" autocomplete="off">
+    <div class="row">
+      <div>
+        <label for="years">Roky života (nepovinné)</label>
+        <input id="years" placeholder="např. 1948 – 2026" autocomplete="off">
+      </div>
+      <div>
+        <label for="relation">Váš vztah k zesnulému</label>
+        <input id="relation" placeholder="např. vnučka, přítel, kolega" autocomplete="off">
+      </div>
+    </div>
+
+    <label>Fotografie zesnulého (nepovinné)</label>
+    <div class="photo-box">
+      <label class="photo-btn" for="photo">Vybrat fotografii</label>
+      <input type="file" id="photo" accept="image/*">
+      <img class="photo-preview" id="photoPreview" alt="">
+    </div>
 
     <label for="memories">Vzpomínky a okamžiky (každá na nový řádek)</label>
     <textarea id="memories" placeholder="Např.:&#10;jak mě učil jezdit na kole&#10;že nám každou neděli pekl koláč&#10;jeho smích, když vyprávěl historky z mládí&#10;jak držel slovo, i když to bylo nepohodlné"></textarea>
     <div class="hint">3–6 konkrétních vzpomínek udělá řeč osobní a živou.</div>
 
-    <label for="qualities">Čím byl (nepovinné, čárkami)</label>
-    <input id="qualities" placeholder="např. laskavý, pracovitý, věrný, měl smysl pro humor" autocomplete="off">
+    <label for="loves">Co měl(a) rád(a)</label>
+    <input id="loves" placeholder="např. zahradu, vnoučata, šachy, klasickou hudbu, psy" autocomplete="off">
+
+    <label for="best">Nejkrásnější vzpomínka na zesnulého</label>
+    <textarea id="best" placeholder="např. společné prázdniny u babičky, kdy jsme každý večer seděli na verandě a on vyprávěl"></textarea>
 
     <button class="btn" id="generate">Poskládat řeč</button>
   </div>
@@ -166,6 +230,7 @@
   <div class="result-wrap" id="resultWrap">
     <div class="paper">
       <div class="cross">✝</div>
+      <img class="photo-final" id="photoFinal" alt="">
       <div id="speech" contenteditable="true" spellcheck="true"></div>
       <div class="sig" id="sig"></div>
     </div>
@@ -184,41 +249,70 @@
 <script>
   const $ = id => document.getElementById(id);
 
+  // foto preview
+  $('photo').addEventListener('change', () => {
+    const f = $('photo').files[0];
+    if (!f) return;
+    const url = URL.createObjectURL(f);
+    $('photoPreview').src = url;
+    $('photoPreview').classList.add('show');
+  });
+
+  function g() {
+    return $('gender').value === 'f';
+  }
+  function oname(name) {
+    return name || (g() ? 'naše milovaná' : 'náš milovaný');
+  }
+
   function buildSpeech() {
     const name = $('name').value.trim();
     const years = $('years').value.trim();
     const relation = $('relation').value.trim();
     const memories = $('memories').value.split('\n').map(s => s.trim()).filter(Boolean);
-    const qualities = $('qualities').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-
-    const full = name || (relation ? 'ten, koho jste znali' : 'náš milovaný');
+    const loves = $('loves').value.split(',').map(s => s.trim()).filter(Boolean);
+    const best = $('best').value.trim();
+    const f = g();
+    const full = oname(name);
+    const byl = f ? 'byla' : 'byl';
+    const mel = f ? 'měla' : 'měl';
+    const ra = f ? 'ráda' : 'rád';
+    const ji = f ? 'ji' : 'ho';
+    const JEHO = name ? name : (f ? 'Ona' : 'On');
 
     let p = [];
     p.push('Vážení pozůstalí, vážení přátelé,');
     p.push('');
-    p.push(relation ? 'Přicházím k vám jako ' + relation.toLowerCase() + ' — a mluvím za všechny, kdo tu ' + (name ? full : 'toho, koho jsme znali') + ' měli rádi.' : 'Přicházím k vám, abych se s ' + (name || 'námi') + ' rozloučil. Nejsem tu sám — jsou tu všichni, kdo ho/ji měli rádi.');
+    p.push(relation
+      ? 'Přicházím k vám jako ' + relation.toLowerCase() + ' — a mluvím za všechny, kdo tu ' + full + ' ' + (f ? 'měli' : 'měli') + ' rádi.'
+      : 'Přicházím k vám, abych se s ' + full + ' rozloučil' + (f ? 'a' : '') + '. Nejsem tu sám' + (f ? 'a' : '') + ' — jsou tu všichni, kdo ' + ji + ' ' + (f ? 'měli' : 'měli') + ' rádi.');
 
     if (years) {
       p.push('');
-      p.push((name || 'Jeho/její') + ' cesta trvala ' + years + '. Ale žádný letopočet neřekne, co skutečně znamenal' + (name ? 'a' : '') + ' — to neseme v sobě.');
+      p.push('Cesta ' + full + ' trvala ' + years + '. Ale žádný letopočet neřekne, co skutečně znamenal' + (f ? 'a' : '') + ' — to neseme v sobě.');
     }
 
     if (memories.length) {
       p.push('');
-      p.push('Chtěl bych se s vámi podělit o pár okamžiků, které zůstávají.');
+      p.push('Chtěl' + (f ? 'a' : '') + ' bych se s vámi podělit o pár okamžiků, které zůstávají.');
       memories.forEach(m => {
         p.push('');
-        p.push('— ' + m.charAt(0).toUpperCase() + m.slice(1) + '. To nejsou jen vzpomínky. To je to, kým ' + (name ? full : 'byl') + ' byl' + (name ? 'a' : '') + '.');
+        p.push('— ' + m.charAt(0).toUpperCase() + m.slice(1) + '. To nejsou jen vzpomínky. To je to, kým ' + full + ' ' + byl + '.');
       });
     }
 
-    if (qualities.length) {
+    if (loves.length) {
       p.push('');
-      p.push('Říká se o něm' + (name ? 'a' : '') + ', že byl' + (name ? 'a' : '') + ' ' + qualities.join(', ') + '. Ale slova jsou jen stín. My jsme ten stín viděli každý den — v tom, jak k nám byl' + (name ? 'a' : '') + ' ' + qualities[0] + ', v tom, jak se k nám choval' + (name ? 'a' : '') + '.');
+      p.push(full + ' ' + mel + ' ' + ra + ' ' + loves.join(', ') + '. A my jsme to viděli — v tom, jak o tom mluvil' + (f ? 'a' : '') + ', jak se u toho usmíval' + (f ? 'a' : '') + '. Tyhle věci teď zůstávají nám, jako připomínka toho, co dělalo ' + ji + ' šťastným' + (f ? 'ou' : '') + '.');
+    }
+
+    if (best) {
+      p.push('');
+      p.push('Nejkrásnější vzpomínka, kterou si odnáším: ' + best.charAt(0).toUpperCase() + best.slice(1) + '.');
     }
 
     p.push('');
-    p.push('Není snadné se rozloučit. Ale víme, že odkaz' + (name ? ' ' + full : '') + ' nekončí dneškem — pokračuje v každém z nás, v tom, co jsme se naučili, v tom, co nám dal' + (name ? 'a' : '') + '.');
+    p.push('Není snadné se rozloučit. Ale víme, že odkaz ' + full + ' nekončí dneškem — pokračuje v každém z nás, v tom, co jsme se naučili, v tom, co nám ' + (f ? 'dala' : 'dal') + '.');
     p.push('');
     p.push('Děkujeme za všechno. A slibujeme, že na tebe nezapomeneme.');
 
@@ -233,6 +327,16 @@
       return;
     }
     $('speech').textContent = buildSpeech();
+
+    const f = $('photo').files[0];
+    if (f) {
+      const url = URL.createObjectURL(f);
+      $('photoFinal').src = url;
+      $('photoFinal').classList.add('show');
+    } else {
+      $('photoFinal').classList.remove('show');
+    }
+
     const name = $('name').value.trim();
     $('sig').textContent = name ? '— za ' + (name.split(' ')[0] || 'všechny') : '';
     $('resultWrap').classList.add('show');
@@ -248,7 +352,6 @@
   $('print').addEventListener('click', () => window.print());
   $('back').addEventListener('click', () => {
     $('resultWrap').classList.remove('show');
-    $('card' /* noop */);
     document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
   });
 </script>
