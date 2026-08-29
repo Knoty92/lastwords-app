@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poslední slova — důstojná smuteční řeč</title>
+<style>
+  :root {
+    --bg: #17181a;
+    --paper: #f7f4ec;
+    --ink: #2b2b2b;
+    --muted: #8f8f96;
+    --gold: #b99a5e;
+    --line: #3a3b3f;
+    --field: #f0ece1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: #e8e6e0;
+    font-family: Georgia, "Times New Roman", serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  .top {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 56px 24px 24px;
+    text-align: center;
+  }
+  .candle { font-size: 1.6rem; margin-bottom: 12px; opacity: 0.85; }
+  .brand { font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+  h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 400; letter-spacing: 0.02em; line-height: 1.2; }
+  .intro { color: var(--muted); font-size: 1rem; margin-top: 16px; max-width: 30em; margin-left: auto; margin-right: auto; }
+
+  .card {
+    max-width: 640px;
+    margin: 32px auto 0;
+    padding: 36px 32px;
+    background: #1f2023;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 22px 0 8px;
+  }
+  input, textarea {
+    width: 100%;
+    background: var(--field);
+    border: none;
+    border-bottom: 1px solid #c9c2b0;
+    padding: 10px 12px;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: var(--ink);
+    border-radius: 2px;
+  }
+  input:focus, textarea:focus { outline: none; border-bottom-color: var(--gold); }
+  textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+  .hint { font-size: 0.82rem; color: var(--muted); margin-top: 6px; font-style: italic; }
+  .row { display: flex; gap: 14px; }
+  .row > div { flex: 1; }
+  @media (max-width: 520px) { .row { flex-direction: column; gap: 0; } }
+
+  .btn {
+    display: block;
+    width: 100%;
+    margin-top: 28px;
+    padding: 15px;
+    background: var(--gold);
+    color: #1c1c1c;
+    border: none;
+    border-radius: 2px;
+    font-family: Georgia, serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+  }
+  .btn:hover { background: #c9ab72; }
+  .btn:active { transform: translateY(1px); }
+  .btn.secondary { background: transparent; border: 1px solid var(--line); color: #e8e6e0; margin-top: 12px; }
+  .btn.secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  .result-wrap { display: none; max-width: 700px; margin: 40px auto 0; padding: 0 24px; }
+  .result-wrap.show { display: block; }
+  .paper {
+    background: var(--paper);
+    color: var(--ink);
+    padding: 56px 48px;
+    border-radius: 2px;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .paper::before, .paper::after {
+    content: ""; position: absolute; left: 14px; right: 14px;
+    border: 1px solid rgba(185,154,94,0.4); pointer-events: none;
+  }
+  .paper::before { top: 8px; } .paper::after { bottom: 8px; }
+  .paper .cross { text-align: center; font-size: 1.6rem; margin-bottom: 20px; color: var(--gold); }
+  #speech {
+    white-space: pre-wrap;
+    font-family: Georgia, serif;
+    font-size: 1.06rem;
+    line-height: 1.8;
+    outline: none;
+  }
+  #speech:focus { box-shadow: 0 0 0 2px rgba(185,154,94,0.3); }
+  .paper .sig { margin-top: 32px; text-align: right; font-style: italic; color: #666; }
+
+  .actions { display: flex; gap: 12px; margin-top: 16px; }
+  .actions .btn { margin-top: 0; flex: 1; }
+
+  footer { max-width: 640px; margin: 0 auto; padding: 48px 24px 60px; text-align: center; color: var(--muted); font-size: 0.8rem; line-height: 1.7; }
+  footer .brand { margin-bottom: 8px; }
+
+  @media print {
+    body { background: #fff; }
+    .top, .card, .actions, footer { display: none !important; }
+    .result-wrap { display: block !important; margin: 0; padding: 0; }
+    .paper { box-shadow: none; border: none; padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="top">
+    <div class="candle">🕯️</div>
+    <div class="brand">Poslední slova</div>
+    <h1>Smuteční řeč, která je o něm.<br>Ne o šabloně.</h1>
+    <p class="intro">Řekněte nám pár vzpomínek a my je s úctou poskládáme do řeči, kterou může pronést jen někdo, kdo ho znal. Text pak patří vám — upravte, co potřebujete.</p>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="name">Jméno zesnulého</label>
+        <input id="name" placeholder="např. Marie Nováková" autocomplete="off">
+      </div>
+      <div>
+        <label for="years">Roky života (nepovinné)</label>
+        <input id="years" placeholder="např. 1948 – 2026" autocomplete="off">
+      </div>
+    </div>
+
+    <label for="relation">Váš vztah k zesnulému</label>
+    <input id="relation" placeholder="např. vnučka, přítel, kolega, dcera" autocomplete="off">
+
+    <label for="memories">Vzpomínky a okamžiky (každá na nový řádek)</label>
+    <textarea id="memories" placeholder="Např.:&#10;jak mě učil jezdit na kole&#10;že nám každou neděli pekl koláč&#10;jeho smích, když vyprávěl historky z mládí&#10;jak držel slovo, i když to bylo nepohodlné"></textarea>
+    <div class="hint">3–6 konkrétních vzpomínek udělá řeč osobní a živou.</div>
+
+    <label for="qualities">Čím byl (nepovinné, čárkami)</label>
+    <input id="qualities" placeholder="např. laskavý, pracovitý, věrný, měl smysl pro humor" autocomplete="off">
+
+    <button class="btn" id="generate">Poskládat řeč</button>
+  </div>
+
+  <div class="result-wrap" id="resultWrap">
+    <div class="paper">
+      <div class="cross">✝</div>
+      <div id="speech" contenteditable="true" spellcheck="true"></div>
+      <div class="sig" id="sig"></div>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" id="copy">Kopírovat</button>
+      <button class="btn secondary" id="print">Tisknout</button>
+      <button class="btn" id="back">Upravit vzpomínky</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="brand">Poslední slova</div>
+    Text je jen návrh — nejdůležitější slova znáte vy. Doplňte je vlastním hlasem.
+  </footer>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  function buildSpeech() {
+    const name = $('name').value.trim();
+    const years = $('years').value.trim();
+    const relation = $('relation').value.trim();
+    const memories = $('memories').value.split('\n').map(s => s.trim()).filter(Boolean);
+    const qualities = $('qualities').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+
+    const full = name || (relation ? 'ten, koho jste znali' : 'náš milovaný');
+
+    let p = [];
+    p.push('Vážení pozůstalí, vážení přátelé,');
+    p.push('');
+    p.push(relation ? 'Přicházím k vám jako ' + relation.toLowerCase() + ' — a mluvím za všechny, kdo tu ' + (name ? full : 'toho, koho jsme znali') + ' měli rádi.' : 'Přicházím k vám, abych se s ' + (name || 'námi') + ' rozloučil. Nejsem tu sám — jsou tu všichni, kdo ho/ji měli rádi.');
+
+    if (years) {
+      p.push('');
+      p.push((name || 'Jeho/její') + ' cesta trvala ' + years + '. Ale žádný letopočet neřekne, co skutečně znamenal' + (name ? 'a' : '') + ' — to neseme v sobě.');
+    }
+
+    if (memories.length) {
+      p.push('');
+      p.push('Chtěl bych se s vámi podělit o pár okamžiků, které zůstávají.');
+      memories.forEach(m => {
+        p.push('');
+        p.push('— ' + m.charAt(0).toUpperCase() + m.slice(1) + '. To nejsou jen vzpomínky. To je to, kým ' + (name ? full : 'byl') + ' byl' + (name ? 'a' : '') + '.');
+      });
+    }
+
+    if (qualities.length) {
+      p.push('');
+      p.push('Říká se o něm' + (name ? 'a' : '') + ', že byl' + (name ? 'a' : '') + ' ' + qualities.join(', ') + '. Ale slova jsou jen stín. My jsme ten stín viděli každý den — v tom, jak k nám byl' + (name ? 'a' : '') + ' ' + qualities[0] + ', v tom, jak se k nám choval' + (name ? 'a' : '') + '.');
+    }
+
+    p.push('');
+    p.push('Není snadné se rozloučit. Ale víme, že odkaz' + (name ? ' ' + full : '') + ' nekončí dneškem — pokračuje v každém z nás, v tom, co jsme se naučili, v tom, co nám dal' + (name ? 'a' : '') + '.');
+    p.push('');
+    p.push('Děkujeme za všechno. A slibujeme, že na tebe nezapomeneme.');
+
+    return p.join('\n');
+  }
+
+  $('generate').addEventListener('click', () => {
+    if (!$('memories').value.trim()) {
+      $('memories').focus();
+      $('memories').style.borderBottomColor = '#c0392b';
+      setTimeout(() => $('memories').style.borderBottomColor = '', 1500);
+      return;
+    }
+    $('speech').textContent = buildSpeech();
+    const name = $('name').value.trim();
+    $('sig').textContent = name ? '— za ' + (name.split(' ')[0] || 'všechny') : '';
+    $('resultWrap').classList.add('show');
+    $('resultWrap').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  $('copy').addEventListener('click', async () => {
+    const txt = $('speech').textContent;
+    try { await navigator.clipboard.writeText(txt); $('copy').textContent = 'Zkopírováno ✓'; setTimeout(() => $('copy').textContent = 'Kopírovat', 2000); }
+    catch (e) { $('copy').textContent = 'Nelze kopírovat'; }
+  });
+
+  $('print').addEventListener('click', () => window.print());
+  $('back').addEventListener('click', () => {
+    $('resultWrap').classList.remove('show');
+    $('card' /* noop */);
+    document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>
